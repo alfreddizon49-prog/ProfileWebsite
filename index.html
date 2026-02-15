@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeCraft — Learn HTML & CSS</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a28;
+    --border: #2a2a40;
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --success: #10b981;
+    --error: #ef4444;
+    --glow: rgba(124, 58, 237, 0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+  }
+
+  .logo {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo span { color: var(--accent3); -webkit-text-fill-color: var(--accent3); }
+
+  .progress-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .progress-bar {
+    width: 140px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 64px);
+  }
+
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 1rem;
+    background: rgba(18,18,26,0.6);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .section-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 0.5rem;
+    margin-bottom: 0.5rem;
+    margin-top: 1.2rem;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  .lesson-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .lesson-btn:hover { background: var(--surface2); color: var(--text); }
+  .lesson-btn.active {
+    background: rgba(124,58,237,0.15);
+    color: var(--accent2);
+    border: 1px solid rgba(124,58,237,0.3);
+  }
+
+  .lesson-btn .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .lesson-btn.done .dot { background: var(--success); }
+  .lesson-btn.active .dot { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); }
+
+  main {
+    padding: 2.5rem 3rem;
+    max-width: 860px;
+  }
+
+  .lesson-header { margin-bottom: 2rem; }
+
+  .lesson-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+    background: rgba(6,182,212,0.12);
+    color: var(--accent2);
+    border: 1px solid rgba(6,182,212,0.25);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .lesson-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+  }
+
+  .lesson-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .content-block { margin-bottom: 2rem; }
+
+  .content-block h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .content-block h3::before {
+    content: '';
+    width: 3px;
+    height: 1.1em;
+    background: var(--accent);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .content-block p {
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-size: 0.95rem;
+    font-weight: 400;
+  }
+
+  .content-block p + p { margin-top: 0.75rem; }
+
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1rem 0;
+    position: relative;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-dots { display: flex; gap: 5px; }
+  .code-dots span { width: 10px; height: 10px; border-radius: 50%; }
+  .code-dots .d1 { background: #ef4444; }
+  .code-dots .d2 { background: #f59e0b; }
+  .code-dots .d3 { background: #10b981; }
+
+  .code-lang {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .copy-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .code-block pre {
+    padding: 1.25rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: #e2e8f0;
+  }
+
+  .code-block pre::-webkit-scrollbar { height: 4px; }
+  .code-block pre::-webkit-scrollbar-track { background: transparent; }
+  .code-block pre::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .hl-tag { color: #f472b6; }
+  .hl-attr { color: #7dd3fc; }
+  .hl-val { color: #86efac; }
+  .hl-comment { color: #475569; font-style: italic; }
+  .hl-prop { color: #c4b5fd; }
+  .hl-num { color: #fbbf24; }
+  .hl-str { color: #86efac; }
+
+  .editor-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+  }
+
+  .editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .editor-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent3);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .editor-title::before { content: '⚡'; }
+
+  .run-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 1rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .run-btn:hover { background: #6d28d9; transform: translateY(-1px); box-shadow: 0 4px 12px var(--glow); }
+  .run-btn:active { transform: translateY(0); }
+
+  .editor-panes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 200px;
+  }
+
+  .editor-pane { position: relative; }
+  .editor-pane:first-child { border-right: 1px solid var(--border); }
+
+  .pane-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    padding: 0.4rem 1rem;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .code-input {
+    width: 100%;
+    min-height: 180px;
+    padding: 1rem;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text);
+    line-height: 1.7;
+    resize: vertical;
+    tab-size: 2;
+  }
+
+  .preview-frame {
+    width: 100%;
+    min-height: 180px;
+    border: none;
+    background: white;
+  }
+
+  .quiz-block {
+    background: var(--surface);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .quiz-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .quiz-title::before { content: '🎯'; }
+
+  .quiz-q {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .quiz-opt {
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+
+  .quiz-opt:hover:not(:disabled) { border-color: var(--accent); background: rgba(124,58,237,0.08); }
+  .quiz-opt.correct { border-color: var(--success); background: rgba(16,185,129,0.1); color: var(--success); }
+  .quiz-opt.wrong { border-color: var(--error); background: rgba(239,68,68,0.08); color: var(--error); }
+
+  .quiz-feedback {
+    margin-top: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: none;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.2); }
+  .quiz-feedback.no { background: rgba(239,68,68,0.08); color: var(--error); border: 1px solid rgba(239,68,68,0.2); }
+
+  .lesson-nav {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-btn.prev {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .nav-btn.prev:hover { border-color: var(--text-muted); color: var(--text); }
+
+  .nav-btn.next {
+    background: linear-gradient(135deg, var(--accent), #6d28d9);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+  }
+
+  .nav-btn.next:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124,58,237,0.4); }
+  .nav-btn:disabled { opacity: 0.3; pointer-events: none; }
+
+  .callout {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+
+  .callout.info { background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2); color: #67e8f9; }
+  .callout.tip { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); color: #fcd34d; }
+  .callout.icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+  .complete-screen {
+    display: none;
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .complete-screen.show { display: block; }
+
+  .complete-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounce 1s ease infinite alternate;
+  }
+
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-10px); }
+  }
+
+  .complete-screen h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--accent3), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+  }
+
+  .complete-screen p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 400px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .restart-btn {
+    padding: 0.85rem 2.5rem;
+    background: linear-gradient(135deg, var(--accent3), #d97706);
+    border: none;
+    border-radius: 10px;
+    color: var(--bg);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .restart-btn:hover { transform: scale(1.05); box-shadow: 0 8px 24px rgba(245,158,11,0.3); }
+
+  .tip-tag {
+    display: inline;
+    background: rgba(124,58,237,0.15);
+    color: #c4b5fd;
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82em;
+    border: 1px solid rgba(124,58,237,0.25);
+  }
+
+  #lesson-content { animation: fadeUp 0.35s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    main { padding: 1.5rem; }
+    .editor-panes { grid-template-columns: 1fr; }
+    .lesson-title { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Code<span>Craft</span></div>
+  <div class="progress-bar-wrap">
+    <span id="progress-text">0 / 8</span>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="section-label">📄 HTML Basics</div>
+    <button class="lesson-btn active" data-lesson="0" onclick="goTo(0)">
+      <span class="dot"></span> What is HTML?
+    </button>
+    <button class="lesson-btn" data-lesson="1" onclick="goTo(1)">
+      <span class="dot"></span> Tags &amp; Elements
+    </button>
+    <button class="lesson-btn" data-lesson="2" onclick="goTo(2)">
+      <span class="dot"></span> Headings &amp; Paragraphs
+    </button>
+    <button class="lesson-btn" data-lesson="3" onclick="goTo(3)">
+      <span class="dot"></span> Links &amp; Images
+    </button>
+
+    <div class="section-label">🎨 CSS Basics</div>
+    <button class="lesson-btn" data-lesson="4" onclick="goTo(4)">
+      <span class="dot"></span> What is CSS?
+    </button>
+    <button class="lesson-btn" data-lesson="5" onclick="goTo(5)">
+      <span class="dot"></span> Selectors &amp; Properties
+    </button>
+    <button class="lesson-btn" data-lesson="6" onclick="goTo(6)">
+      <span class="dot"></span> Colors &amp; Backgrounds
+    </button>
+    <button class="lesson-btn" data-lesson="7" onclick="goTo(7)">
+      <span class="dot"></span> Box Model &amp; Layout
+    </button>
+  </aside>
+
+  <main>
+    <div id="lesson-content"></div>
+    <div class="complete-screen" id="complete-screen">
+      <div class="complete-icon">🏆</div>
+      <h2>You Did It!</h2>
+      <p>You've completed all HTML & CSS lessons. You're ready to start building real websites!</p>
+      <button class="restart-btn" onclick="restart()">Start Over</button>
+    </div>
+  </main>
+</div>
+
+<script>
+const LESSONS = [
+  {
+    tag: 'HTML · Lesson 1',
+    title: 'What is HTML?',
+    desc: 'HTML stands for HyperText Markup Language — it\'s the skeleton of every webpage you\'ve ever visited.',
+    content: `
+      <div class="content-block">
+        <h3>The Building Block of the Web</h3>
+        <p>HTML is a <strong>markup language</strong>, not a programming language. It uses <em>tags</em> to describe the structure and meaning of content — telling the browser what is a heading, what is a paragraph, what is a link, and so on.</p>
+        <p>Every website you see is built on HTML. CSS makes it look beautiful, and JavaScript makes it interactive — but HTML is the foundation.</p>
+      </div>
+      <div class="callout info"><span class="icon">💡</span> Think of HTML like the frame of a house. CSS is the paint and furniture, and JavaScript is the electricity and plumbing.</div>
+      <div class="content-block">
+        <h3>Your First HTML Document</h3>
+        <p>Every HTML file starts with a basic structure. Here's what a minimal HTML page looks like:</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">HTML</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="hl-tag">&lt;html</span> <span class="hl-attr">lang</span>=<span class="hl-val">"en"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;head&gt;</span>
+    <span class="hl-tag">&lt;title&gt;</span>My First Page<span class="hl-tag">&lt;/title&gt;</span>
+  <span class="hl-tag">&lt;/head&gt;</span>
+  <span class="hl-tag">&lt;body&gt;</span>
+    <span class="hl-comment">&lt;!-- Your visible content goes here --&gt;</span>
+    <span class="hl-tag">&lt;p&gt;</span>Hello, World!<span class="hl-tag">&lt;/p&gt;</span>
+  <span class="hl-tag">&lt;/body&gt;</span>
+<span class="hl-tag">&lt;/html&gt;</span></pre>
+      </div>
+      <div class="content-block">
+        <h3>Key Parts Explained</h3>
+        <p><span class="tip-tag">&lt;!DOCTYPE html&gt;</span> — Tells the browser this is an HTML5 document.</p>
+        <p><span class="tip-tag">&lt;html&gt;</span> — The root element that wraps everything.</p>
+        <p><span class="tip-tag">&lt;head&gt;</span> — Contains metadata (info about the page, not shown to users).</p>
+        <p><span class="tip-tag">&lt;body&gt;</span> — Everything visible on the page goes here.</p>
+      </div>
+      <div class="quiz-block">
+        <div class="quiz-title">Quick Check</div>
+        <div class="quiz-q">Which tag contains the visible content of a webpage?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">&lt;head&gt;</button>
+          <button class="quiz-opt" onclick="answer(this, true)">&lt;body&gt;</button>
+          <button class="quiz-opt" onclick="answer(this, false)">&lt;html&gt;</button>
+          <button class="quiz-opt" onclick="answer(this, false)">&lt;title&gt;</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback">✅ Correct! The &lt;body&gt; tag holds all visible page content.</div>
+      </div>
+    `
+  },
+  {
+    tag: 'HTML · Lesson 2',
+    title: 'Tags & Elements',
+    desc: 'Tags are the core syntax of HTML — they wrap content to define what it is.',
+    content: `
+      <div class="content-block">
+        <h3>Anatomy of a Tag</h3>
+        <p>An HTML <strong>element</strong> usually has an opening tag, some content, and a closing tag. The closing tag has a forward slash before the tag name.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">HTML</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-comment">&lt;!-- Structure: &lt;tagname&gt; content &lt;/tagname&gt; --&gt;</span>
+<span class="hl-tag">&lt;p&gt;</span>This is a paragraph.<span class="hl-tag">&lt;/p&gt;</span>
+<span class="hl-tag">&lt;h1&gt;</span>This is a big heading.<span class="hl-tag">&lt;/h1&gt;</span>
+
+<span class="hl-comment">&lt;!-- Self-closing tags (no content, no closing tag) --&gt;</span>
+<span class="hl-tag">&lt;br&gt;</span>    <span class="hl-comment">&lt;!-- line break --&gt;</span>
+<span class="hl-tag">&lt;hr&gt;</span>    <span class="hl-comment">&lt;!-- horizontal rule --&gt;</span>
+<span class="hl-tag">&lt;img</span> <span class="hl-attr">src</span>=<span class="hl-val">"photo.jpg"</span><span class="hl-tag">&gt;</span>  <span class="hl-comment">&lt;!-- image --&gt;</span></pre>
+      </div>
+      <div class="content-block">
+        <h3>Attributes</h3>
+        <p>Tags can have <strong>attributes</strong> — extra information added inside the opening tag. They come in <span class="tip-tag">name="value"</span> pairs.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">HTML</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-val">"https://google.com"</span><span class="hl-tag">&gt;</span>Click me<span class="hl-tag">&lt;/a&gt;</span>
+<span class="hl-tag">&lt;img</span> <span class="hl-attr">src</span>=<span class="hl-val">"cat.jpg"</span> <span class="hl-attr">alt</span>=<span class="hl-val">"A cute cat"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;p</span> <span class="hl-attr">class</span>=<span class="hl-val">"intro"</span><span class="hl-tag">&gt;</span>Hello!<span class="hl-tag">&lt;/p&gt;</span></pre>
+      </div>
+      <div class="callout tip"><span class="icon">🔑</span> Common attributes: <span class="tip-tag">href</span> for links, <span class="tip-tag">src</span> for images, <span class="tip-tag">class</span> for CSS targeting, <span class="tip-tag">id</span> for unique identification.</div>
+      <div class="quiz-block">
+        <div class="quiz-title">Quick Check</div>
+        <div class="quiz-q">What is the correct syntax for a closing tag?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">&lt;p&gt;</button>
+          <button class="quiz-opt" onclick="answer(this, false)">&lt;p/&gt;</button>
+          <button class="quiz-opt" onclick="answer(this, true)">&lt;/p&gt;</button>
+          <button class="quiz-opt" onclick="answer(this, false)">p/</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback">✅ Correct! Closing tags use a forward slash: &lt;/p&gt;</div>
+      </div>
+    `
+  },
+  {
+    tag: 'HTML · Lesson 3',
+    title: 'Headings & Paragraphs',
+    desc: 'Text is the most common content on the web — HTML gives you powerful tools to structure it.',
+    content: `
+      <div class="content-block">
+        <h3>Heading Tags: h1 to h6</h3>
+        <p>HTML has 6 levels of headings. <span class="tip-tag">&lt;h1&gt;</span> is the most important (largest), and <span class="tip-tag">&lt;h6&gt;</span> is the least important (smallest). Use only one <span class="tip-tag">&lt;h1&gt;</span> per page.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">HTML</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-tag">&lt;h1&gt;</span>Main Title<span class="hl-tag">&lt;/h1&gt;</span>
+<span class="hl-tag">&lt;h2&gt;</span>Section Heading<span class="hl-tag">&lt;/h2&gt;</span>
+<span class="hl-tag">&lt;h3&gt;</span>Subsection<span class="hl-tag">&lt;/h3&gt;</span>
+<span class="hl-tag">&lt;p&gt;</span>This is a regular paragraph of text.<span class="hl-tag">&lt;/p&gt;</span>
+<span class="hl-tag">&lt;p&gt;</span>This is another paragraph.<span class="hl-tag">&lt;/p&gt;</span></pre>
+      </div>
+      <div class="content-block">
+        <h3>Text Formatting</h3>
+        <p>HTML also has tags for inline text formatting — making words bold, italic, underlined, etc.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">HTML</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-tag">&lt;strong&gt;</span>Bold text<span class="hl-tag">&lt;/strong&gt;</span>
+<span class="hl-tag">&lt;em&gt;</span>Italic text<span class="hl-tag">&lt;/em&gt;</span>
+<span class="hl-tag">&lt;u&gt;</span>Underlined text<span class="hl-tag">&lt;/u&gt;</span>
+<span class="hl-tag">&lt;mark&gt;</span>Highlighted text<span class="hl-tag">&lt;/mark&gt;</span></pre>
+      </div>
+      <div class="editor-section">
+        <div class="editor-header">
+          <span class="editor-title">Try It Yourself</span>
+          <button class="run-btn" onclick="runCode(this)">▶ Run</button>
+        </div>
+        <div class="editor-panes">
+          <div class="editor-pane">
+            <div class="pane-label">✏ Code Editor</div>
+            <textarea class="code-input" spellcheck="false"><h1>My Page Title</h1>
+<h2>A Subtitle</h2>
+<p>This is a <strong>paragraph</strong> with some <em>styled</em> text.</p>
+<p>Try editing me!</p></textarea>
+          </div>
+          <div class="editor-pane">
+            <div class="pane-label">👁 Preview</div>
+            <iframe class="preview-frame" id="preview-0"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="quiz-block">
+        <div class="quiz-title">Quick Check</div>
+        <div class="quiz-q">Which tag makes text bold AND signals importance to search engines?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">&lt;b&gt;</button>
+          <button class="quiz-opt" onclick="answer(this, true)">&lt;strong&gt;</button>
+          <button class="quiz-opt" onclick="answer(this, false)">&lt;bold&gt;</button>
+          <button class="quiz-opt" onclick="answer(this, false)">&lt;em&gt;</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback">✅ Right! &lt;strong&gt; is semantic — it means "important", not just visually bold.</div>
+      </div>
+    `
+  },
+  {
+    tag: 'HTML · Lesson 4',
+    title: 'Links & Images',
+    desc: 'Links connect pages together and images bring content to life — the essentials of any real webpage.',
+    content: `
+      <div class="content-block">
+        <h3>Anchor Tags (Links)</h3>
+        <p>Links are created with the <span class="tip-tag">&lt;a&gt;</span> (anchor) tag. The <span class="tip-tag">href</span> attribute specifies the destination URL.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">HTML</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-comment">&lt;!-- External link --&gt;</span>
+<span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-val">"https://example.com"</span><span class="hl-tag">&gt;</span>Visit Example<span class="hl-tag">&lt;/a&gt;</span>
+
+<span class="hl-comment">&lt;!-- Open in a new tab --&gt;</span>
+<span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-val">"https://example.com"</span> <span class="hl-attr">target</span>=<span class="hl-val">"_blank"</span><span class="hl-tag">&gt;</span>New Tab<span class="hl-tag">&lt;/a&gt;</span>
+
+<span class="hl-comment">&lt;!-- Link to a section on the same page --&gt;</span>
+<span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-val">"#section-id"</span><span class="hl-tag">&gt;</span>Jump Down<span class="hl-tag">&lt;/a&gt;</span></pre>
+      </div>
+      <div class="content-block">
+        <h3>Images</h3>
+        <p>Images use the self-closing <span class="tip-tag">&lt;img&gt;</span> tag. The <span class="tip-tag">src</span> is the image path and <span class="tip-tag">alt</span> describes the image for accessibility.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">HTML</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-tag">&lt;img</span> <span class="hl-attr">src</span>=<span class="hl-val">"photo.jpg"</span> <span class="hl-attr">alt</span>=<span class="hl-val">"A description"</span><span class="hl-tag">&gt;</span>
+
+<span class="hl-comment">&lt;!-- Set size with width/height --&gt;</span>
+<span class="hl-tag">&lt;img</span> <span class="hl-attr">src</span>=<span class="hl-val">"photo.jpg"</span> <span class="hl-attr">alt</span>=<span class="hl-val">"Photo"</span> <span class="hl-attr">width</span>=<span class="hl-val">"300"</span><span class="hl-tag">&gt;</span>
+
+<span class="hl-comment">&lt;!-- Clickable image (link + image combined) --&gt;</span>
+<span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-val">"https://example.com"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;img</span> <span class="hl-attr">src</span>=<span class="hl-val">"logo.png"</span> <span class="hl-attr">alt</span>=<span class="hl-val">"Logo"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;/a&gt;</span></pre>
+      </div>
+      <div class="callout info"><span class="icon">♿</span> Always add an <span class="tip-tag">alt</span> attribute to images! Screen readers use it to describe images to users who can't see them.</div>
+      <div class="quiz-block">
+        <div class="quiz-title">Quick Check</div>
+        <div class="quiz-q">What attribute specifies where a link goes?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">src</button>
+          <button class="quiz-opt" onclick="answer(this, false)">link</button>
+          <button class="quiz-opt" onclick="answer(this, true)">href</button>
+          <button class="quiz-opt" onclick="answer(this, false)">url</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback">✅ Correct! href = "Hypertext REFerence" — it sets the link destination.</div>
+      </div>
+    `
+  },
+  {
+    tag: 'CSS · Lesson 1',
+    title: 'What is CSS?',
+    desc: 'CSS — Cascading Style Sheets — is the language that transforms plain HTML into visually stunning pages.',
+    content: `
+      <div class="content-block">
+        <h3>Styling the Web</h3>
+        <p>Without CSS, all webpages would look the same: black text on a white background with blue links. CSS is what gives every website its unique look — colors, fonts, layouts, animations, and more.</p>
+        <p>CSS works by <strong>selecting</strong> HTML elements and applying <strong>styles</strong> to them.</p>
+      </div>
+      <div class="callout info"><span class="icon">💡</span> "Cascading" means that styles flow down — later rules can override earlier ones, and parent styles can be inherited by child elements.</div>
+      <div class="content-block">
+        <h3>Three Ways to Add CSS</h3>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">HTML + CSS</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-comment">&lt;!-- 1. Inline (avoid this — hard to maintain) --&gt;</span>
+<span class="hl-tag">&lt;p</span> <span class="hl-attr">style</span>=<span class="hl-val">"color: red;"</span><span class="hl-tag">&gt;</span>Red text<span class="hl-tag">&lt;/p&gt;</span>
+
+<span class="hl-comment">&lt;!-- 2. Internal (inside &lt;head&gt;) --&gt;</span>
+<span class="hl-tag">&lt;style&gt;</span>
+  <span class="hl-prop">p</span> { <span class="hl-attr">color</span>: <span class="hl-val">blue</span>; }
+<span class="hl-tag">&lt;/style&gt;</span>
+
+<span class="hl-comment">&lt;!-- 3. External file (best practice!) --&gt;</span>
+<span class="hl-tag">&lt;link</span> <span class="hl-attr">rel</span>=<span class="hl-val">"stylesheet"</span> <span class="hl-attr">href</span>=<span class="hl-val">"styles.css"</span><span class="hl-tag">&gt;</span></pre>
+      </div>
+      <div class="content-block">
+        <h3>CSS Rule Structure</h3>
+        <p>A CSS rule has a <strong>selector</strong> (what to target) and a <strong>declaration block</strong> (what styles to apply).</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">CSS</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-comment">/* selector { property: value; } */</span>
+
+<span class="hl-prop">h1</span> {
+  <span class="hl-attr">color</span>: <span class="hl-val">navy</span>;
+  <span class="hl-attr">font-size</span>: <span class="hl-num">32px</span>;
+  <span class="hl-attr">font-weight</span>: <span class="hl-val">bold</span>;
+}</pre>
+      </div>
+      <div class="quiz-block">
+        <div class="quiz-title">Quick Check</div>
+        <div class="quiz-q">What is the recommended best practice for adding CSS?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">Inline style attributes</button>
+          <button class="quiz-opt" onclick="answer(this, false)">&lt;style&gt; inside &lt;body&gt;</button>
+          <button class="quiz-opt" onclick="answer(this, true)">External stylesheet file</button>
+          <button class="quiz-opt" onclick="answer(this, false)">No CSS needed</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback">✅ Correct! External files keep styles organized and reusable across multiple pages.</div>
+      </div>
+    `
+  },
+  {
+    tag: 'CSS · Lesson 2',
+    title: 'Selectors & Properties',
+    desc: 'Selectors are how you target exactly which elements to style — mastering them is key to powerful CSS.',
+    content: `
+      <div class="content-block">
+        <h3>Types of Selectors</h3>
+        <p>CSS selectors range from simple (target a tag type) to very specific (target one unique element).</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">CSS</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-comment">/* Element selector — targets all &lt;p&gt; tags */</span>
+<span class="hl-prop">p</span> { <span class="hl-attr">color</span>: <span class="hl-val">gray</span>; }
+
+<span class="hl-comment">/* Class selector — targets class="highlight" */</span>
+<span class="hl-prop">.highlight</span> { <span class="hl-attr">background</span>: <span class="hl-val">yellow</span>; }
+
+<span class="hl-comment">/* ID selector — targets id="header" (unique!) */</span>
+<span class="hl-prop">#header</span> { <span class="hl-attr">font-size</span>: <span class="hl-num">2rem</span>; }
+
+<span class="hl-comment">/* Descendant selector — &lt;a&gt; inside &lt;nav&gt; */</span>
+<span class="hl-prop">nav a</span> { <span class="hl-attr">text-decoration</span>: <span class="hl-val">none</span>; }
+
+<span class="hl-comment">/* Pseudo-class — style on hover */</span>
+<span class="hl-prop">button:hover</span> { <span class="hl-attr">background</span>: <span class="hl-val">blue</span>; }</pre>
+      </div>
+      <div class="content-block">
+        <h3>Common CSS Properties</h3>
+        <p>Here are the most-used CSS properties you'll work with every day:</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">CSS</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-prop">p</span> {
+  <span class="hl-comment">/* Text */</span>
+  <span class="hl-attr">color</span>: <span class="hl-val">#333</span>;
+  <span class="hl-attr">font-size</span>: <span class="hl-num">16px</span>;
+  <span class="hl-attr">font-family</span>: <span class="hl-val">Arial, sans-serif</span>;
+  <span class="hl-attr">font-weight</span>: <span class="hl-val">bold</span>;
+  <span class="hl-attr">text-align</span>: <span class="hl-val">center</span>;
+
+  <span class="hl-comment">/* Box */</span>
+  <span class="hl-attr">width</span>: <span class="hl-num">300px</span>;
+  <span class="hl-attr">padding</span>: <span class="hl-num">16px</span>;
+  <span class="hl-attr">margin</span>: <span class="hl-num">8px</span>;
+  <span class="hl-attr">border</span>: <span class="hl-num">1px</span> <span class="hl-val">solid black</span>;
+
+  <span class="hl-comment">/* Background */</span>
+  <span class="hl-attr">background-color</span>: <span class="hl-val">lightblue</span>;
+}</pre>
+      </div>
+      <div class="editor-section">
+        <div class="editor-header">
+          <span class="editor-title">Try It Yourself</span>
+          <button class="run-btn" onclick="runCode(this)">▶ Run</button>
+        </div>
+        <div class="editor-panes">
+          <div class="editor-pane">
+            <div class="pane-label">✏ Code Editor</div>
+            <textarea class="code-input" spellcheck="false"><style>
+  h2 { color: purple; }
+  .cool { color: red; font-weight: bold; }
+  #special { background: yellow; }
+</style>
+<h2>I am purple!</h2>
+<p class="cool">I am red and bold!</p>
+<p id="special">I have a yellow background!</p></textarea>
+          </div>
+          <div class="editor-pane">
+            <div class="pane-label">👁 Preview</div>
+            <iframe class="preview-frame" id="preview-1"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="quiz-block">
+        <div class="quiz-title">Quick Check</div>
+        <div class="quiz-q">Which CSS selector targets an element with class="box"?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">#box</button>
+          <button class="quiz-opt" onclick="answer(this, true)">.box</button>
+          <button class="quiz-opt" onclick="answer(this, false)">box</button>
+          <button class="quiz-opt" onclick="answer(this, false)">*box</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback">✅ Correct! Classes are targeted with a dot (.) prefix.</div>
+      </div>
+    `
+  },
+  {
+    tag: 'CSS · Lesson 3',
+    title: 'Colors & Backgrounds',
+    desc: 'Color is one of the most powerful design tools — CSS gives you multiple ways to work with it.',
+    content: `
+      <div class="content-block">
+        <h3>Ways to Define Colors</h3>
+        <p>CSS supports many color formats. Each has its uses — keywords are easy to read, hex is precise, and rgba lets you control transparency.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">CSS</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-prop">p</span> {
+  <span class="hl-comment">/* Named color */</span>
+  <span class="hl-attr">color</span>: <span class="hl-val">tomato</span>;
+
+  <span class="hl-comment">/* Hex code */</span>
+  <span class="hl-attr">color</span>: <span class="hl-val">#e74c3c</span>;
+
+  <span class="hl-comment">/* RGB */</span>
+  <span class="hl-attr">color</span>: <span class="hl-val">rgb(231, 76, 60)</span>;
+
+  <span class="hl-comment">/* RGBA (with transparency 0–1) */</span>
+  <span class="hl-attr">color</span>: <span class="hl-val">rgba(231, 76, 60, 0.5)</span>;
+}</pre>
+      </div>
+      <div class="content-block">
+        <h3>Backgrounds</h3>
+        <p>Backgrounds can be solid colors, images, or even gradients. Gradients are great for modern designs.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">CSS</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-prop">div</span> {
+  <span class="hl-comment">/* Solid color */</span>
+  <span class="hl-attr">background-color</span>: <span class="hl-val">#3498db</span>;
+
+  <span class="hl-comment">/* Image */</span>
+  <span class="hl-attr">background-image</span>: <span class="hl-val">url("bg.jpg")</span>;
+  <span class="hl-attr">background-size</span>: <span class="hl-val">cover</span>;
+
+  <span class="hl-comment">/* Gradient */</span>
+  <span class="hl-attr">background</span>: <span class="hl-val">linear-gradient(135deg, #667eea, #764ba2)</span>;
+}</pre>
+      </div>
+      <div class="editor-section">
+        <div class="editor-header">
+          <span class="editor-title">Try It Yourself</span>
+          <button class="run-btn" onclick="runCode(this)">▶ Run</button>
+        </div>
+        <div class="editor-panes">
+          <div class="editor-pane">
+            <div class="pane-label">✏ Code Editor</div>
+            <textarea class="code-input" spellcheck="false"><style>
+  body { margin: 0; padding: 16px; }
+  .card {
+    padding: 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-family: Arial;
+    margin-bottom: 12px;
+  }
+  .card2 {
+    padding: 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+    font-family: Arial;
+  }
+</style>
+<div class="card">I have a purple gradient!</div>
+<div class="card2">I have a pink gradient!</div></textarea>
+          </div>
+          <div class="editor-pane">
+            <div class="pane-label">👁 Preview</div>
+            <iframe class="preview-frame" id="preview-2"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="quiz-block">
+        <div class="quiz-title">Quick Check</div>
+        <div class="quiz-q">Which value makes a color semi-transparent in CSS?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">rgb()</button>
+          <button class="quiz-opt" onclick="answer(this, false)">hex()</button>
+          <button class="quiz-opt" onclick="answer(this, true)">rgba()</button>
+          <button class="quiz-opt" onclick="answer(this, false)">transparent()</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback">✅ Right! rgba() takes a 4th value (alpha) from 0 (invisible) to 1 (solid).</div>
+      </div>
+    `
+  },
+  {
+    tag: 'CSS · Lesson 4',
+    title: 'Box Model & Layout',
+    desc: 'Every HTML element is a box — understanding the CSS Box Model unlocks precise, predictable layouts.',
+    content: `
+      <div class="content-block">
+        <h3>The Box Model</h3>
+        <p>Every HTML element is surrounded by 4 layers: <strong>content</strong>, <strong>padding</strong>, <strong>border</strong>, and <strong>margin</strong>. Understanding this model is fundamental to CSS layout.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">CSS</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-prop">div</span> {
+  <span class="hl-comment">/* Content size */</span>
+  <span class="hl-attr">width</span>: <span class="hl-num">200px</span>;
+  <span class="hl-attr">height</span>: <span class="hl-num">100px</span>;
+
+  <span class="hl-comment">/* Padding: space INSIDE the border */</span>
+  <span class="hl-attr">padding</span>: <span class="hl-num">20px</span>;
+  <span class="hl-attr">padding</span>: <span class="hl-num">10px 20px</span>;
+
+  <span class="hl-comment">/* Border */</span>
+  <span class="hl-attr">border</span>: <span class="hl-num">2px</span> <span class="hl-val">solid #333</span>;
+  <span class="hl-attr">border-radius</span>: <span class="hl-num">8px</span>;
+
+  <span class="hl-comment">/* Margin: space OUTSIDE the border */</span>
+  <span class="hl-attr">margin</span>: <span class="hl-num">16px</span>;
+}</pre>
+      </div>
+      <div class="callout tip"><span class="icon">🧮</span> Pro tip: Add <span class="tip-tag">box-sizing: border-box</span> so padding doesn't expand the element's width — it makes sizing much more predictable!</div>
+      <div class="content-block">
+        <h3>Display & Flexbox</h3>
+        <p>The <span class="tip-tag">display</span> property controls how elements sit on the page. Flexbox is the modern way to create flexible layouts.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="code-lang">CSS</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="hl-prop">.container</span> {
+  <span class="hl-attr">display</span>: <span class="hl-val">flex</span>;
+  <span class="hl-attr">gap</span>: <span class="hl-num">16px</span>;
+  <span class="hl-attr">justify-content</span>: <span class="hl-val">center</span>;
+  <span class="hl-attr">align-items</span>: <span class="hl-val">center</span>;
+  <span class="hl-attr">flex-wrap</span>: <span class="hl-val">wrap</span>;
+}</pre>
+      </div>
+      <div class="editor-section">
+        <div class="editor-header">
+          <span class="editor-title">Try It Yourself</span>
+          <button class="run-btn" onclick="runCode(this)">▶ Run</button>
+        </div>
+        <div class="editor-panes">
+          <div class="editor-pane">
+            <div class="pane-label">✏ Code Editor</div>
+            <textarea class="code-input" spellcheck="false"><style>
+  body { margin: 0; padding: 16px; font-family: Arial; }
+  .row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .box {
+    flex: 1;
+    padding: 20px;
+    border: 2px solid #7c3aed;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+  }
+</style>
+<div class="row">
+  <div class="box">Box 1</div>
+  <div class="box">Box 2</div>
+  <div class="box">Box 3</div>
+</div></textarea>
+          </div>
+          <div class="editor-pane">
+            <div class="pane-label">👁 Preview</div>
+            <iframe class="preview-frame" id="preview-3"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="quiz-block">
+        <div class="quiz-title">Quick Check</div>
+        <div class="quiz-q">What CSS property adds space INSIDE an element's border?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">margin</button>
+          <button class="quiz-opt" onclick="answer(this, true)">padding</button>
+          <button class="quiz-opt" onclick="answer(this, false)">border</button>
+          <button class="quiz-opt" onclick="answer(this, false)">gap</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback">✅ Correct! Padding = space inside. Margin = space outside.</div>
+      </div>
+    `
+  }
+];
+
+let currentLesson = 0;
+let completedLessons = new Set();
+
+function render() {
+  if (currentLesson >= LESSONS.length) {
+    document.getElementById('lesson-content').style.display = 'none';
+    document.getElementById('complete-screen').classList.add('show');
+    return;
+  }
+
+  document.getElementById('complete-screen').classList.remove('show');
+  document.getElementById('lesson-content').style.display = 'block';
+
+  const l = LESSONS[currentLesson];
+  const isFirst = currentLesson === 0;
+  const isLast = currentLesson === LESSONS.length - 1;
+
+  document.getElementById('lesson-content').innerHTML = `
+    <div class="lesson-header">
+      <div class="lesson-tag">${l.tag}</div>
+      <h1 class="lesson-title">${l.title}</h1>
+      <p class="lesson-desc">${l.desc}</p>
+    </div>
+    ${l.content}
+    <div class="lesson-nav">
+      <button class="nav-btn prev" onclick="goTo(${currentLesson - 1})" ${isFirst ? 'disabled' : ''}>← Previous</button>
+      <button class="nav-btn next" onclick="goTo(${currentLesson + 1})">${isLast ? '🏆 Finish' : 'Next Lesson →'}</button>
+    </div>
+  `;
+
+  document.querySelectorAll('.lesson-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === currentLesson);
+    btn.classList.toggle('done', completedLessons.has(i) && i !== currentLesson);
+  });
+
+  const pct = Math.round((completedLessons.size / LESSONS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${completedLessons.size} / ${LESSONS.length}`;
+
+  document.querySelectorAll('.editor-section').forEach(sec => runCodeInSection(sec));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goTo(index) {
+  if (index < 0) return;
+  completedLessons.add(currentLesson);
+  currentLesson = index;
+  render();
+}
+
+function runCode(btn) {
+  const section = btn.closest('.editor-section');
+  runCodeInSection(section);
+}
+
+function runCodeInSection(section) {
+  const textarea = section.querySelector('.code-input');
+  const iframe = section.querySelector('.preview-frame');
+  if (!textarea || !iframe) return;
+  iframe.srcdoc = `<style>body{margin:0;padding:8px;font-family:Arial,sans-serif}</style>${textarea.value}`;
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+function answer(btn, correct) {
+  const opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  const feedback = btn.closest('.quiz-block').querySelector('.quiz-feedback');
+  opts.forEach(o => { o.disabled = true; });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    opts.forEach(o => {
+      if (o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+    });
+    feedback.textContent = '❌ Not quite — the highlighted answer is correct!';
+    feedback.classList.add('no');
+  }
+  feedback.classList.add('show', correct ? 'ok' : 'no');
+}
+
+function restart() {
+  currentLesson = 0;
+  completedLessons.clear();
+  document.querySelectorAll('.lesson-btn').forEach(b => b.classList.remove('done', 'active'));
+  document.getElementById('lesson-content').style.display = 'block';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
